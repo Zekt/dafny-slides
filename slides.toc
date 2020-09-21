@@ -1,0 +1,2 @@
+\beamer@sectionintoc {1}{Basic Syntax}{3}{0}{1}
+\beamer@sectionintoc {2}{Conclusion}{20}{0}{2}

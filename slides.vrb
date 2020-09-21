@@ -1,0 +1,10 @@
+\frametitle{Assertions}
+  \verb|assert| is a keyword to place assertions in the moddle of a method.
+  \begin{verbnobox}[\footnotesize]
+// use definition of Abs() from before.
+method Testing()
+{
+   var v := Abs(3);
+   assert 0 <= v;
+}
+  \end{verbnobox}
