@@ -136,114 +136,161 @@ function abs(x: int): int
    if x < 0 then -x else x
 }
   \end{verbnobox}[\footnotesize]
-  Unlike a method, which can have all sorts of statements in its body, a function body must consist of exactly one expression, with the correct type.
+  Unlike a method, which can have all sorts of statements in its body, a function body must consist of exactly one expression, with the correct return type.
 \end{frame}
 
-\begin{frame}{Lists}
-  \begin{columns}[onlytextwidth]
-    \column{0.5\textwidth}
-      Items
-      \begin{itemize}
-        \item Milk \item Eggs \item Potatos
-      \end{itemize}
+\begin{frame}[fragile]
+  \frametitle{Functions}
+The power of functions comes from the fact that they can be used directly in specifications. So we can write:
+  \begin{verbnobox}[\footnotesize]
+assert abs(3) == 3;
+  \end{verbnobox}
+without explicitly writing pre- and postconditions.
 
-    \column{0.5\textwidth}
-      Enumerations
-      \begin{enumerate}
-        \item First, \item Second and \item Last.
-      \end{enumerate}
-  \end{columns}
 \end{frame}
-\begin{frame}{Descriptions}
-  \begin{description}
-    \item[PowerPoint] Meeh.
-    \item[Beamer] Yeeeha.
-  \end{description}
+
+\begin{frame}[fragile]{Loop Invariants}
+
+  \begin{verbnobox}[\footnotesize]
+var i := 0;
+while i < n
+   invariant 0 <= i
+{
+   i := i + 1;
+}
+  \end{verbnobox}
+When you specify an invariant, Dafny proves two things: the invariant holds upon entering the loop, and it is preserved by the loop.
+Assuming the invariant holds at the beginning of the loop, we must show that executing the loop body once makes the invariant hold again.
 \end{frame}
-\begin{frame}{Animation}
-  \begin{itemize}[<+- | alert@+>]
-    \item \alert<4>{This is\only<4>{ really} important}
-    \item Now this
-    \item And now this
-  \end{itemize}
+
+\begin{frame}[fragile]{Loop Invariants}
+  \begin{verbnobox}[\footnotesize]
+method ComputeFib(n: nat) returns (b: nat)
+   ensures b == fib(n)
+{
+   if n == 0 { return 0; }
+   var i: int := 1;
+   var a := 0;
+       b := 1;
+   while i < n
+      invariant 0 < i <= n
+      invariant a == fib(i - 1)
+      invariant b == fib(i)
+   {
+      a, b := b, a + b;
+      i := i + 1;
+   }
+}
+  \end{verbnobox}
 \end{frame}
-\begin{frame}{Figures}
-  \begin{figure}
-    \newcounter{density}
-    \setcounter{density}{20}
-    \begin{tikzpicture}
-      \def\couleur{mLightBrown}
-      \path[coordinate] (0,0)  coordinate(A)
-                  ++( 90:5cm) coordinate(B)
-                  ++(0:5cm) coordinate(C)
-                  ++(-90:5cm) coordinate(D);
-      \draw[fill=\couleur!\thedensity] (A) -- (B) -- (C) --(D) -- cycle;
-      \foreach \x in {1,...,40}{%
-          \pgfmathsetcounter{density}{\thedensity+20}
-          \setcounter{density}{\thedensity}
-          \path[coordinate] coordinate(X) at (A){};
-          \path[coordinate] (A) -- (B) coordinate[pos=.10](A)
-                              -- (C) coordinate[pos=.10](B)
-                              -- (D) coordinate[pos=.10](C)
-                              -- (X) coordinate[pos=.10](D);
-          \draw[fill=\couleur!\thedensity] (A)--(B)--(C)-- (D) -- cycle;
+
+\begin{frame}[fragile]{Termination}
+A decreases annotation, as its name suggests, gives Dafny and expression that decreases with every loop iteration or recursive call.
+  \begin{verbnobox}[\footnotesize]
+while 0 < i
+   invariant 0 <= i
+   decreases i
+{
+   i := i - 1;
+}
+  \end{verbnobox}
+\end{frame}
+
+\begin{frame}[fragile]{Arrays}
+  \verb|array<T>| is the type of array of \verb|T|. Arrays can be \verb|null|, and have a built in length field, \verb|a.Length|.
+  All array accesses must be proven to be within bounds.
+  This program can be successfully verified:
+  \begin{verbnobox}[\footnotesize]
+method Find(a: array<int>, key: int) returns (index: int)
+   ensures 0 <= index ==> index < a.Length && a[index] == key
+{
+  return -1;
+}
+  \end{verbnobox}
+\end{frame}
+
+\begin{frame}[fragile]{Quantifiers}
+  \begin{verbnobox}[\scriptsize]
+method Find(a: array<int>, key: int) returns (index: int)
+   ensures 0 <= index ==> index < a.Length && a[index] == key
+   ensures index < 0 ==> forall k :: 0 <= k < a.Length ==> a[k] != key
+{
+   index := 0;
+   while index < a.Length
+      invariant 0 <= index <= a.Length
+      invariant forall k :: 0 <= k < index ==> a[k] != key
+   {
+      if a[index] == key { return; }
+      index := index + 1;
+   }
+   index := -1;
+}
+  \end{verbnobox}
+\end{frame}
+
+\begin{frame}[fragile]{Predicates}
+  A predicate is a function which returns a boolean. 
+  \begin{verbnobox}[\footnotesize]
+predicate sorted(a: array<int>)
+   requires a != null
+{
+   forall j, k :: 0 <= j < k < a.Length ==> a[j] <= a[k]
+}
+  \end{verbnobox}
+Note that there is no return type, because predicates always return a boolean.
+Dafny rejects this code as given, claiming that the predicate cannot read a. Fixing this issue requires another annotation, the reads annotation.
+\end{frame}
+
+\begin{frame}[fragile]{Framing}
+  The sorted predicate is not able to access the array because the array was not included in the function's reading frame. The reading frame of a function (or predicate) is all the memory locations that the function is allowed to read. 
+  Dafny will check that you do not read any memory location that is not stated in the reading frame.
+  \begin{verbnobox}[\footnotesize]
+predicate sorted(a: array<int>)
+   requires a != null
+   reads a
+{
+   forall j, k :: 0 <= j < k < a.Length ==> a[j] <= a[k]
+}
+  \end{verbnobox}
+\end{frame}
+
+\begin{frame}[fragile]{Binary Search}
+  \begin{verbnobox}[\tiny]
+predicate sorted(a: array<int>)
+   requires a != null
+   reads a
+{
+   forall j, k :: 0 <= j < k < a.Length ==> a[j] <= a[k]
+}
+method BinarySearch(a: array<int>, value: int) returns (index: int)
+   requires a != null && 0 <= a.Length && sorted(a)
+   ensures 0 <= index ==> index < a.Length && a[index] == value
+   ensures index < 0 ==> forall k :: 0 <= k < a.Length ==> a[k] != value
+{
+   var low, high := 0, a.Length;
+   while low < high
+      invariant 0 <= low <= high <= a.Length
+      invariant forall i ::
+         0 <= i < a.Length && !(low <= i < high) ==> a[i] != value
+   {
+      var mid := (low + high) / 2;
+      if a[mid] < value
+      {
+         low := mid + 1;
       }
-    \end{tikzpicture}
-    \caption{Rotated square from
-    \href{http://www.texample.net/tikz/examples/rotated-polygons/}{texample.net}.}
-  \end{figure}
-\end{frame}
-\begin{frame}{Tables}
-  \begin{table}
-    \caption{Largest cities in the world (source: Wikipedia)}
-    \begin{tabular}{lr}
-      \toprule
-      City & Population\\
-      \midrule
-      Mexico City & 20,116,842\\
-      Shanghai & 19,210,000\\
-      Peking & 15,796,450\\
-      Istanbul & 14,160,467\\
-      \bottomrule
-    \end{tabular}
-  \end{table}
-\end{frame}
-\begin{frame}{Blocks}
-
-  \begin{block}{This is a block title}
-    This is soothing.
-  \end{block}
-
-\end{frame}
-\begin{frame}{Math}
-  \begin{equation*}
-    e = \lim_{n\to \infty} \left(1 + \frac{1}{n}\right)^n
-  \end{equation*}
-\end{frame}
-\begin{frame}{Quotes}
-  \begin{quote}
-    Veni, Vidi, Vici
-  \end{quote}
+      else if value < a[mid]
+      {
+         high := mid;
+      }
+      else
+      {
+         return mid;
+      }
+   }
+   return -1;
+}
+  \end{verbnobox}
 \end{frame}
 
-\plain{Dark background}{\vspace{-2em}\begin{center}\includegraphics[width=\textwidth]{images/valley.jpg}\end{center}}
-
-\section{Conclusion}
-
-\begin{frame}{Summary}
-
-  Get the source of this theme and the demo presentation from
-
-  \begin{center}\url{github.com/matze/mtheme}\end{center}
-
-  The theme \emph{itself} is licensed under a
-  \href{http://creativecommons.org/licenses/by-sa/4.0/}{Creative Commons
-  Attribution-ShareAlike 4.0 International License}.
-
-  \begin{center}\ccbysa\end{center}
-
-\end{frame}
-
-\plain{}{Questions?}
 
 \end{document}
