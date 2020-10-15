@@ -1,10 +1,19 @@
-\frametitle{Assertions}
-  \verb|assert| is a keyword to place assertions in the moddle of a method.
-  \begin{verbnobox}[\footnotesize]
-// use definition of Abs() from before.
-method Testing()
+\frametitle{Lemmas}
+Finishing the lemma:
+  \begin{verbnobox}[\scriptsize]
+lemma SkippingLemma(a : array<int>, j : int)
+   requires a != null
+   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
+   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
+   requires 0 <= j < a.Length
+   ensures forall i :: j <= i < j + a[j] && i < a.Length ==> a[i] != 0
 {
-   var v := Abs(3);
-   assert 0 <= v;
+   var i := j;
+   while i < j + a[j] && i < a.Length
+     invariant i < a.Length ==> a[j] - (i-j) <= a[i]
+     invariant forall k :: j <= k < i && k < a.Length ==> a[k] != 0
+   {
+     i := i + 1;
+   }
 }
   \end{verbnobox}
