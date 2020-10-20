@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (Web2C 2018/NixOS.org) (preloaded format=xelatex 2020.3.4)  7 OCT 2020 15:45
+This is XeTeX, Version 3.14159265-2.6-0.99999 (Web2C 2018/NixOS.org) (preloaded format=xelatex 2020.3.4)  20 OCT 2020 16:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1607,7 +1607,25 @@ LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 12.
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb) [8
+ (./slides.vrb
+LaTeX Font Info:    Try loading font information for U+msa on input line 4.
+
+(/nix/store/rran635s7k1jhvl7xapx3kh96sr2h8rw-texlive-combined-full-2018/share/t
+exmf/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 4.
+
+(/nix/store/rran635s7k1jhvl7xapx3kh96sr2h8rw-texlive-combined-full-2018/share/t
+exmf/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+
+LaTeX Font Warning: Font shape `TU/FiraSans-Light.ttf(0)/m/it' undefined
+(Font)              using `TU/FiraSans-Light.ttf(0)/m/n' instead on input line 
+4.
+
+) [8
 
 ]
 \openout4 = `slides.vrb'.
@@ -1617,17 +1635,12 @@ LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 12.
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb)
-[10
+ (./slides.vrb) [10
 
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb
-
-LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 7.
-
-) [11
+ (./slides.vrb) [11
 
 ]
 \openout4 = `slides.vrb'.
@@ -1637,7 +1650,11 @@ LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 7.
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb) [13
+ (./slides.vrb
+
+LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 7.
+
+) [13
 
 ]
 \openout4 = `slides.vrb'.
@@ -1647,8 +1664,7 @@ LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 7.
 ]
 \openout4 = `slides.vrb'.
 
-
-(./slides.vrb) [15
+ (./slides.vrb) [15
 
 ]
 \openout4 = `slides.vrb'.
@@ -1658,13 +1674,13 @@ LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 7.
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb) [17
+
+(./slides.vrb) [17
 
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb)
-[18
+ (./slides.vrb) [18
 
 ]
 \openout4 = `slides.vrb'.
@@ -1675,12 +1691,12 @@ LaTeX Warning: Characters dropped after `\end{verbnobox}' on input line 7.
 \openout4 = `slides.vrb'.
 
  (./slides.vrb)
-Overfull \vbox (13.01567pt too high) detected at line 293
- []
-
 [20
 
-] [21
+]
+\openout4 = `slides.vrb'.
+
+ (./slides.vrb) [21
 
 ]
 \openout4 = `slides.vrb'.
@@ -1700,8 +1716,7 @@ Overfull \vbox (13.01567pt too high) detected at line 293
 ]
 \openout4 = `slides.vrb'.
 
-
-(./slides.vrb) [25
+ (./slides.vrb) [25
 
 ]
 \openout4 = `slides.vrb'.
@@ -1711,7 +1726,11 @@ Overfull \vbox (13.01567pt too high) detected at line 293
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb) [27
+ (./slides.vrb)
+Overfull \vbox (13.01567pt too high) detected at line 376
+ []
+
+[27
 
 ] [28
 
@@ -1733,12 +1752,45 @@ Overfull \vbox (13.01567pt too high) detected at line 293
 ]
 \openout4 = `slides.vrb'.
 
- (./slides.vrb) [32
+
+(./slides.vrb) [32
 
 ]
 \openout4 = `slides.vrb'.
 
  (./slides.vrb) [33
+
+]
+\openout4 = `slides.vrb'.
+
+ (./slides.vrb) [34
+
+] [35
+
+]
+\openout4 = `slides.vrb'.
+
+ (./slides.vrb) [36
+
+]
+\openout4 = `slides.vrb'.
+
+ (./slides.vrb) [37
+
+]
+\openout4 = `slides.vrb'.
+
+ (./slides.vrb) [38
+
+]
+\openout4 = `slides.vrb'.
+
+ (./slides.vrb) [39
+
+]
+\openout4 = `slides.vrb'.
+
+ (./slides.vrb) [40
 
 ]
 \tf@nav=\write6
@@ -1750,28 +1802,25 @@ Overfull \vbox (13.01567pt too high) detected at line 293
 \tf@snm=\write8
 \openout8 = `slides.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 476.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 476.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 559.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 559.
  (./slides.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 476.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 476.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 559.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 559.
+Package rerunfilecheck Info: File `slides.out' has not changed.
+(rerunfilecheck)             Checksum: 0EF02C6A598DECBE969E941964BED415.
 
 
-Package rerunfilecheck Warning: File `slides.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package rerunfilecheck Info: Checksums for `slides.out':
-(rerunfilecheck)             Before: 917420CBBA86800CB12501ABF594CDBD
-(rerunfilecheck)             After:  0EF02C6A598DECBE969E941964BED415.
  ) 
 Here is how much of TeX's memory you used:
- 35256 strings out of 492933
- 732918 string characters out of 6112793
- 799601 words of memory out of 5000000
- 38685 multiletter control sequences out of 15000+600000
- 533002 words of font info for 63 fonts, out of 8000000 for 9000
+ 35380 strings out of 492933
+ 735399 string characters out of 6112793
+ 800322 words of memory out of 5000000
+ 38780 multiletter control sequences out of 15000+600000
+ 535606 words of font info for 74 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  65i,12n,103p,773b,793s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on slides.pdf (33 pages).
+Output written on slides.pdf (40 pages).
