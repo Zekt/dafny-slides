@@ -149,6 +149,8 @@ method Abs(x: int) returns (y: int)
   \end{verbnobox}
 \end{frame}
 
+// provide a example without functions
+// show that there are something cannot be stated without functions
 \begin{frame}[fragile]
   \frametitle{Functions}
   \begin{verbnobox}[\footnotesize]
@@ -194,7 +196,9 @@ Assuming the invariant holds at the beginning of the loop, Dafny checks that exe
 
 \end{frame}
 
-\begin{frame}[fragile]{Termination}
+//Provide a equivalent Dafny program using two assertions.
+//use before/after variables
+\begin{frame}[fragile]{Loop Termination}
 A \verb|decreases| annotation, as its name suggests, gives Dafny and expression, called measure, that strictly decreases with every loop iteration or recursive call.
   \begin{verbnobox}[\footnotesize]
 while 0 < i
@@ -328,7 +332,7 @@ method Find(a: array<int>, key: int) returns (index: int)
 \end{frame}
 
 \begin{frame}[fragile]{Predicates}
-  A predicate is a function which returns a boolean. 
+  A predicate is a \verb|function| which returns a boolean. 
   \begin{verbnobox}[\footnotesize]
 predicate sorted(a: array<int>)
    requires a != null
