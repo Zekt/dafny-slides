@@ -21,7 +21,7 @@
   Dafny is an imperative programming language with built-in annotations to prove correctness of code.
   \begin{itemize}
   \item Dafny is built on Boogie, a intermediate verification language.
-  \item Boogie generates verification conditions, which are passed to an SMT solver (Z3 by default).
+  \item Boogie generates verification conditions (logical formulas), which are passed to an SMT solver (Z3 by default).
   \end{itemize}
   
 \end{frame}
@@ -96,19 +96,20 @@ returns (more: int, less: int)
 \begin{frame}[fragile]{Pre- and Postconditions}
   We can check by ourselves that postcondition above holds under given precondition. But how does Dafny know that?
 
-  Pre- and Postconditions are translated to the following formula, which is passed to an SMT solver,  ($\to$ represents implication.)
+  Pre- and Postconditions are translated to the following formula, ($\to$ represents implication.)
   \begin{align*}
     (0 < y) \to ((more = x + y) \land (more > x)) \\
             \land ((less = x - y) \land (less < x)) \\
   \end{align*}
-  which can also be checked by hand. 
+  We can check by hand that the annotated pre- and postconditions hold if and only if this formula always holds. 
 \end{frame}
 
 \begin{frame}[fragile]{Pre- and Postconditions}
-  \begin{itemize}
-  \item While an SMT solver cannot directly prove that a proposition always hold, the problem can be translated to verify negations/conjunction of negations of above formulas,
-   \item such that if they are unsatisfiable, there is no program state that could violates given pre- and postconditions:
-  \end{itemize}
+ % \begin{itemize}
+  While an SMT solver cannot directly prove that a proposition always holds, the problem can be translated to verifying the satisfiability of \textbf{negation} of the given formula,
+
+  such that if it is unsatisfiable, there is no program state that could violates given pre- and postconditions:
+  %\end{itemize}
     $$\neg((0 < y) \to ((x + y > x) \land (x - y < x)))$$
 \end{frame}
 
@@ -173,7 +174,7 @@ without explicitly writing pre- and postconditions.
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
-To pre- and postconditions of a loop, We would want to konw what always hold for each loop iteration.
+To pre- and postconditions of a loop, We would want to konw what always holds for each loop iteration.
   \begin{verbnobox}[\footnotesize]
 var i := 0;
 while i < n
@@ -199,7 +200,7 @@ Assuming the invariant holds at the beginning of the loop, Dafny checks that exe
 %Provide a equivalent Dafny program using two assertions.
 %use before/after variables
 \begin{frame}[fragile]{Loop Termination}
-A \verb|decreases| annotation, as its name suggests, gives Dafny and expression, called measure, that strictly decreases with every loop iteration or recursive call.
+  A \verb|decreases| annotation, as its name suggests, gives Dafny and expression, called \textbf{measure}, that strictly decreases with every loop iteration or recursive call.
   \begin{verbnobox}[\footnotesize]
 while 0 < i
    invariant 0 <= i
@@ -212,8 +213,11 @@ Combining with the requirement that it must be an integer, the measure will reac
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
-A \verb|decreases| is automatically added if not given by the user, so an addition formula is added to verification condition whenerver a loop is present, in this case:
+The \verb|decreases| in this case would be translated to:
   $$(i_1 = i_0 - 1) \land (i_1 < i_0)$$
+It is crucial that strict decrementation of the measure does entail termination (the measure has not reached zero yet, or the loop terminates, i.e. the while condition does not hold):
+  $$(0 < i_1) \lor \neg(0 < i_1) $$
+A \verb|decreases| is automatically added if not given by the user, so an addition formula is added to verification condition whenerver a loop is present.
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
@@ -236,6 +240,7 @@ method ComputeFib(n: nat) returns (b: nat)
    }
 }
   \end{verbnobox}
+  Hint: it should be defined recursively.
 \end{frame}
 
 %\begin{frame}[fragile]{Look into Boogie and Z3}
@@ -329,6 +334,7 @@ method Find(a: array<int>, key: int) returns (index: int)
 }
   \end{verbnobox}
   Excercise: write down the verification condition(s) of the program above.
+  %Answer: while loop: 1. 0 <= index index <= a.Length
 \end{frame}
 
 \begin{frame}[fragile]{Predicates}
@@ -363,14 +369,14 @@ predicate sorted(a: array<int>)
   \end{verbnobox}
 \end{frame}
 
-\begin{frame}[fragile]{Framing}
-  \begin{itemize}
-  \item Dafny will check that you do not read any memory location that is not stated in the reading frame.
-  \item Framing helps Dafny to check satisfiability of predicates.
-  \item If a predicate \verb|reads| some memory locations that includes $M$, and $M$ is modified after a call to that predicate, Dafny could not assert that predicate still holds after the memory access.
-  \item Otherwise, Dafny would assert that predicate still holds.
-  \end{itemize}
-\end{frame}
+%\begin{frame}[fragile]{Framing}
+%  \begin{itemize}
+%  \item Dafny will check that you do not read any memory location that is not stated in the reading frame.
+%  \item Framing helps Dafny to check satisfiability of predicates.
+%  \item If a predicate \verb|reads| some memory locations that includes $M$, and $M$ is modified after a call to that predicate, Dafny could not assert that predicate still holds after the memory access.
+%  \item Otherwise, Dafny would assert that predicate still holds.
+%  \end{itemize}
+%\end{frame}
 
 \begin{frame}[fragile]{Example: Binary Search}
   \begin{verbnobox}[\tiny]
@@ -410,185 +416,185 @@ method BinarySearch(a: array<int>, value: int) returns (index: int)
   \end{verbnobox}
 \end{frame}
 
-\section{Termination}
-
-\begin{frame}[fragile]{Termination}
-There are two potential sources of non-terminating (divergent) behavior: loops, and recursive functions and methods. 
-Dafny employs \verb|decreases| annotations for handling either case.
-
-A decreases annotation specifies a value, called the termination measure, that becomes strictly smaller each time, and it is bounded.
-
-Each kind of termination measure comes with a built-in lower bound,
-Dafny proves that the termination measure gets smaller on each iteration. 
-\end{frame}
-
-\begin{frame}[fragile]
-  \begin{verbnobox}[\footnotesize]
-while i < n
-   invariant 0 <= i <= n
-{
-   // do something interesting
-   i := i + 1;
-}
-  \end{verbnobox}
-Dafny verifies this program immediately. Because it is a common loop form and Dafny tries to guess the termination measure \verb|decreases n - i|.
-
-Dafny requires that the loop does not execute again when the termination measure is negative. 
-\end{frame}
-
-\begin{frame}[fragile]
-Dafny proves the termination of the whole program, not just loops.
-For each function/method that is possibly recursive, it requires either an explicit or implicit decreases annotation on it.
-
-Most recursive functions just call themselves with smaller values of the parameters, so the parameters decreasing is the default guess:
-  \begin{verbnobox}[\footnotesize]
-function fac(n: nat): nat
-{
-   if n == 0 then 1 else n * fac(n-1)
-}
-  \end{verbnobox}
-\end{frame}
-
-\begin{frame}[fragile]
-Dafny provides a special annotation that instructs Dafny not to attempt to prove termination:
-  \begin{verbnobox}[\footnotesize]
-method hail(N: nat)
-   decreases *
-{
-   var n := N;
-   while 1 < n
-      decreases *
-   { 
-      n := if n % 2 == 0 then n / 2 else n * 3 + 1;
-   }
-}
-  \end{verbnobox}
-\end{frame}
-
-\begin{frame}[fragile]
-The final termination measure is a tuple of the other kinds of measures. For example, the following implementation of the Ackermann function uses a pair of integers to prove termination:
-  \begin{verbnobox}[\footnotesize]
-function Ack(m: nat, n: nat): nat
-   decreases m, n
-{
-   if m == 0 then n + 1
-   else if n == 0 then Ack(m - 1, 1)
-   else Ack(m - 1, Ack(m, n - 1))
-}
-  \end{verbnobox}
-Eventually one of the elements must decrease.
-\end{frame}
-
-\begin{frame}[fragile]
-Termination applies not just to single functions/methods, but also to multiple mutually recursive functions/methods:
-  \begin{verbnobox}[\footnotesize]
-predicate even(n: nat)
-   ensures even(n) <==> n % 2 == 0
-{
-   if n == 0 then true else odd(n-1)
-}
-predicate odd(n: nat)
-   ensures odd(n) <==> n % 2 != 0
-{
-   if n == 0 then false else even(n-1)
-}
-  \end{verbnobox}
-\end{frame}
-
-\section{Lemmas}
-
-\begin{frame}[fragile]{Lemmas}
-Sometimes there are steps of logic required to prove a program correct, but they are too complex for Dafny to discover and use on its own:
-  \begin{verbnobox}[\scriptsize]
-method FindZero(a: array<int>) returns (index: int)
-   requires a != null
-   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
-   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
-   ensures index < 0  ==> forall i :: 0 <= i < a.Length ==> a[i] != 0
-   ensures 0 <= index ==> index < a.Length && a[index] == 0
-{
-   index := 0;
-   while index < a.Length
-      invariant 0 <= index
-      invariant forall k :: 0 <= k < index && k < a.Length ==> a[k] != 0
-   {
-      if a[index] == 0 { return; }
-      index := index + a[index];
-   }
-   index := -1;
-}
-  \end{verbnobox}
-\end{frame}
-
-\begin{frame}[fragile]{Lemmas}
-A \verb|lemma| is really just a ghost method. The desired property stated by the lemma is declared as the postcondition:
-  \begin{verbnobox}[\footnotesize]
-lemma Lemma(...)
-   ensures (desirable property)
-{
-   ...
-}
-  \end{verbnobox}
-\end{frame}
-
-\begin{frame}[fragile]{Lemmas}
-For the zero search problem:
-  \begin{verbnobox}[\scriptsize]
-lemma SkippingLemma(a : array<int>, j : int)
-   requires a != null
-   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
-   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
-   requires 0 <= j < a.Length
-   ensures forall i :: j <= i < j + a[j] && i < a.Length ==> a[i] != 0
-{
-   ...
-}
-  \end{verbnobox}
-\end{frame}
-
-\begin{frame}[fragile]{Lemmas}
-Checking that this lemma is what we want:
-  \begin{verbnobox}[\scriptsize]
-method FindZero(a: array<int>) returns (index: int)
-   requires a != null
-   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
-   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
-   ensures index < 0  ==> forall i :: 0 <= i < a.Length ==> a[i] != 0
-    ensures 0 <= index ==> index < a.Length && a[index] == 0
-{
-   index := 0;
-   while index < a.Length
-      invariant 0 <= index
-      invariant forall k :: 0 <= k < index && k < a.Length ==> a[k] != 0
-   {
-      if a[index] == 0 { return; }
-      SkippingLemma(a, index);
-      index := index + a[index];
-   }
-   index := -1;
-}
-  \end{verbnobox}
-\end{frame}
-
-\begin{frame}[fragile]{Lemmas}
-Finishing the lemma:
-  \begin{verbnobox}[\scriptsize]
-lemma SkippingLemma(a : array<int>, j : int)
-   requires a != null
-   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
-   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
-   requires 0 <= j < a.Length
-   ensures forall i :: j <= i < j + a[j] && i < a.Length ==> a[i] != 0
-{
-   var i := j;
-   while i < j + a[j] && i < a.Length
-     invariant i < a.Length ==> a[j] - (i-j) <= a[i]
-     invariant forall k :: j <= k < i && k < a.Length ==> a[k] != 0
-   {
-     i := i + 1;
-   }
-}
-  \end{verbnobox}
-\end{frame}
+%\section{Termination}
+%
+%\begin{frame}[fragile]{Termination}
+%There are two potential sources of non-terminating (divergent) behavior: loops, and recursive functions and methods. 
+%Dafny employs \verb|decreases| annotations for handling either case.
+%
+%A decreases annotation specifies a value, called the termination measure, that becomes strictly smaller each time, and it is bounded.
+%
+%Each kind of termination measure comes with a built-in lower bound,
+%Dafny proves that the termination measure gets smaller on each iteration. 
+%\end{frame}
+%
+%\begin{frame}[fragile]
+%  \begin{verbnobox}[\footnotesize]
+%while i < n
+%   invariant 0 <= i <= n
+%{
+%   // do something interesting
+%   i := i + 1;
+%}
+%  \end{verbnobox}
+%Dafny verifies this program immediately. Because it is a common loop form and Dafny tries to guess the termination measure \verb|decreases n - i|.
+%
+%Dafny requires that the loop does not execute again when the termination measure is negative. 
+%\end{frame}
+%
+%\begin{frame}[fragile]
+%Dafny proves the termination of the whole program, not just loops.
+%For each function/method that is possibly recursive, it requires either an explicit or implicit decreases annotation on it.
+%
+%Most recursive functions just call themselves with smaller values of the parameters, so the parameters decreasing is the default guess:
+%  \begin{verbnobox}[\footnotesize]
+%function fac(n: nat): nat
+%{
+%   if n == 0 then 1 else n * fac(n-1)
+%}
+%  \end{verbnobox}
+%\end{frame}
+%
+%\begin{frame}[fragile]
+%Dafny provides a special annotation that instructs Dafny not to attempt to prove termination:
+%  \begin{verbnobox}[\footnotesize]
+%method hail(N: nat)
+%   decreases *
+%{
+%   var n := N;
+%   while 1 < n
+%      decreases *
+%   { 
+%      n := if n % 2 == 0 then n / 2 else n * 3 + 1;
+%   }
+%}
+%  \end{verbnobox}
+%\end{frame}
+%
+%\begin{frame}[fragile]
+%The final termination measure is a tuple of the other kinds of measures. For example, the following implementation of the Ackermann function uses a pair of integers to prove termination:
+%  \begin{verbnobox}[\footnotesize]
+%function Ack(m: nat, n: nat): nat
+%   decreases m, n
+%{
+%   if m == 0 then n + 1
+%   else if n == 0 then Ack(m - 1, 1)
+%   else Ack(m - 1, Ack(m, n - 1))
+%}
+%  \end{verbnobox}
+%Eventually one of the elements must decrease.
+%\end{frame}
+%
+%\begin{frame}[fragile]
+%Termination applies not just to single functions/methods, but also to multiple mutually recursive functions/methods:
+%  \begin{verbnobox}[\footnotesize]
+%predicate even(n: nat)
+%   ensures even(n) <==> n % 2 == 0
+%{
+%   if n == 0 then true else odd(n-1)
+%}
+%predicate odd(n: nat)
+%   ensures odd(n) <==> n % 2 != 0
+%{
+%   if n == 0 then false else even(n-1)
+%}
+%  \end{verbnobox}
+%\end{frame}
+%
+%\section{Lemmas}
+%
+%\begin{frame}[fragile]{Lemmas}
+%Sometimes there are steps of logic required to prove a program correct, but they are too complex for Dafny to discover and use on its own:
+%  \begin{verbnobox}[\scriptsize]
+%method FindZero(a: array<int>) returns (index: int)
+%   requires a != null
+%   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
+%   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
+%   ensures index < 0  ==> forall i :: 0 <= i < a.Length ==> a[i] != 0
+%   ensures 0 <= index ==> index < a.Length && a[index] == 0
+%{
+%   index := 0;
+%   while index < a.Length
+%      invariant 0 <= index
+%      invariant forall k :: 0 <= k < index && k < a.Length ==> a[k] != 0
+%   {
+%      if a[index] == 0 { return; }
+%      index := index + a[index];
+%   }
+%   index := -1;
+%}
+%  \end{verbnobox}
+%\end{frame}
+%
+%\begin{frame}[fragile]{Lemmas}
+%A \verb|lemma| is really just a ghost method. The desired property stated by the lemma is declared as the postcondition:
+%  \begin{verbnobox}[\footnotesize]
+%lemma Lemma(...)
+%   ensures (desirable property)
+%{
+%   ...
+%}
+%  \end{verbnobox}
+%\end{frame}
+%
+%\begin{frame}[fragile]{Lemmas}
+%For the zero search problem:
+%  \begin{verbnobox}[\scriptsize]
+%lemma SkippingLemma(a : array<int>, j : int)
+%   requires a != null
+%   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
+%   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
+%   requires 0 <= j < a.Length
+%   ensures forall i :: j <= i < j + a[j] && i < a.Length ==> a[i] != 0
+%{
+%   ...
+%}
+%  \end{verbnobox}
+%\end{frame}
+%
+%\begin{frame}[fragile]{Lemmas}
+%Checking that this lemma is what we want:
+%  \begin{verbnobox}[\scriptsize]
+%method FindZero(a: array<int>) returns (index: int)
+%   requires a != null
+%   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
+%   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
+%   ensures index < 0  ==> forall i :: 0 <= i < a.Length ==> a[i] != 0
+%    ensures 0 <= index ==> index < a.Length && a[index] == 0
+%{
+%   index := 0;
+%   while index < a.Length
+%      invariant 0 <= index
+%      invariant forall k :: 0 <= k < index && k < a.Length ==> a[k] != 0
+%   {
+%      if a[index] == 0 { return; }
+%      SkippingLemma(a, index);
+%      index := index + a[index];
+%   }
+%   index := -1;
+%}
+%  \end{verbnobox}
+%\end{frame}
+%
+%\begin{frame}[fragile]{Lemmas}
+%Finishing the lemma:
+%  \begin{verbnobox}[\scriptsize]
+%lemma SkippingLemma(a : array<int>, j : int)
+%   requires a != null
+%   requires forall i :: 0 <= i < a.Length ==> 0 <= a[i]
+%   requires forall i :: 0 < i < a.Length ==> a[i-1]-1 <= a[i]
+%   requires 0 <= j < a.Length
+%   ensures forall i :: j <= i < j + a[j] && i < a.Length ==> a[i] != 0
+%{
+%   var i := j;
+%   while i < j + a[j] && i < a.Length
+%     invariant i < a.Length ==> a[j] - (i-j) <= a[i]
+%     invariant forall k :: j <= k < i && k < a.Length ==> a[k] != 0
+%   {
+%     i := i + 1;
+%   }
+%}
+%  \end{verbnobox}
+%\end{frame}
 
 \end{document}
