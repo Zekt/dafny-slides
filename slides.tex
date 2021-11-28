@@ -20,7 +20,7 @@
 
   Dafny is an imperative programming language with built-in annotations to prove correctness of code.
   \begin{itemize}
-  \item Dafny is built on Boogie, a intermediate verification language.
+  \item Dafny is built on Boogie, an intermediate verification language.
   \item Boogie generates verification conditions (logical formulas), which are passed to an SMT solver (Z3 by default).
   \end{itemize}
   
@@ -42,7 +42,7 @@ method Abs(x: int) returns (y: int)
      { return x; }
 }
   \end{verbnobox}
-  The input parameters are read only, and an implicit \verb|return| is added automatically at the end of a method, where the current values of return parameters are returned as-is.
+  The input parameters are read-only, and an implicit \verb|return| is added automatically at the end of a method, where the current values of return parameters are returned as-is.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -115,7 +115,7 @@ returns (more: int, less: int)
 
 \begin{frame}[fragile]
   \frametitle{Assertions}
-  \verb|assert| is a keyword to place assertions in the moddle of a method.
+  \verb|assert| is a keyword to place assertions in the middle of a method.
   \begin{verbnobox}[\footnotesize]
 // use definition of Abs() from before.
 method Testing()
@@ -174,7 +174,7 @@ without explicitly writing pre- and postconditions.
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
-To pre- and postconditions of a loop, We would want to konw what always holds for each loop iteration.
+To verify pre- and postconditions of a loop, we would want to konw what always holds before and after each loop iteration.
   \begin{verbnobox}[\footnotesize]
 var i := 0;
 while i < n
@@ -183,24 +183,24 @@ while i < n
    i := i + 1;
 }
   \end{verbnobox}
-When you specify an invariant, Dafny proves two things:
+When you specify an \verb|invariant|, Dafny trys to prove two things:
   \begin{itemize}
   \item the invariant holds upon entering the loop, and
-  \item it is preserved by the loop.
+  \item it holds after an iteration of the loop (preserved by the loop).
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
-Assuming the invariant holds at the beginning of the loop, Dafny checks that executing the loop body once makes the invariant hold again:
+Assuming the invariant holds at the beginning of the loop, Dafny checks that executing the loop body once does not invalidate the invariant:
     $$(0 \leq i_0) \to (i_1 = i_0 + 1) \land (0 \leq i_1)$$
-, as mentioned, to verify above formula, the problem is equivalent to unsatisfiability of the negation of the formula.
+As mentioned, the problem of whether this formula holds or not is equivalent to the unsatisfiability of the negation of the formula.
 
 \end{frame}
 
 %Provide a equivalent Dafny program using two assertions.
 %use before/after variables
 \begin{frame}[fragile]{Loop Termination}
-  A \verb|decreases| annotation, as its name suggests, gives Dafny and expression, called \textbf{measure}, that strictly decreases with every loop iteration or recursive call.
+  A \verb|decreases| annotation can be specified for a \verb|method|, \verb|function|, or while loop. As its name suggests, it is followed by an expression, called \textbf{measure}, that strictly decreases with every loop iteration or recursive call.
   \begin{verbnobox}[\footnotesize]
 while 0 < i
    invariant 0 <= i
@@ -213,11 +213,11 @@ Combining with the requirement that it must be an integer, the measure will reac
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
-The \verb|decreases| in this case would be translated to:
+The requirements for \verb|decreases| in this case would be translated to:
   $$(i_1 = i_0 - 1) \land (i_1 < i_0)$$
 It is crucial that strict decrementation of the measure does entail termination (the measure has not reached zero yet, or the loop terminates, i.e. the while condition does not hold):
   $$(0 < i_1) \lor \neg(0 < i_1) $$
-A \verb|decreases| is automatically added if not given by the user, so an addition formula is added to verification condition whenerver a loop is present.
+A \verb|decreases| is automatically added if not given by the user, so an additional formula is added to the verification conditions whenerver a loop is present.
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
@@ -315,7 +315,7 @@ method Find(a: array<int>, key: int) returns (index: int)
 \end{frame}
 
 \begin{frame}[fragile]{Quantifiers}
-  A \verb|forall| quantifier can be added in a proposition.
+  A \verb|forall| quantifier may appear in a proposition.
 
   \begin{verbnobox}[\scriptsize]
 method Find(a: array<int>, key: int) returns (index: int)
@@ -346,18 +346,18 @@ predicate sorted(a: array<int>)
    forall j, k :: 0 <= j < k < a.Length ==> a[j] <= a[k]
 }
   \end{verbnobox}
-Note that
+Notice that
   \begin{itemize}
   \item there is no return type, because predicates always return a boolean.
-  \item Dafny rejects this code as given, claiming that the predicate cannot read a.
+  \item Dafny rejects this code as given, claiming that the predicate cannot read \verb|a|.
   \item Fixing this issue requires the \verb|reads| annotation.
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Framing}
   \begin{itemize}
-  \item The sorted predicate is not able to access the array because the array was not included in the function's reading frame.
-  \item The reading frame of a function (or predicate) is all the memory locations that the function is allowed to read. 
+  \item The \verb|sorted| predicate is not able to access the array because the array was not included in the function's reading frame.
+  \item The reading frame of a function (or predicate) is all the memory locations the function is allowed to read. 
   \end{itemize}
   \begin{verbnobox}[\footnotesize]
 predicate sorted(a: array<int>)
