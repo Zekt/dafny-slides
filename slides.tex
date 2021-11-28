@@ -217,7 +217,7 @@ The requirements for \verb|decreases| in this case would be translated to:
   $$(i_1 = i_0 - 1) \land (i_1 < i_0)$$
 It is crucial that strict decrementation of the measure does entail termination (the measure has not reached zero yet, or the loop terminates, i.e. the while condition does not hold):
   $$(0 < i_1) \lor \neg(0 < i_1) $$
-A \verb|decreases| is automatically added if not given by the user, so an additional formula is added to the verification conditions whenerver a loop is present.
+A \verb|decreases| is automatically added if not given by the user, so an additional formula is added to the verification conditions whenever a loop is present.
 \end{frame}
 
 \begin{frame}[fragile]{Loop Invariants}
@@ -299,17 +299,17 @@ method ComputeFib(n: nat) returns (b: nat)
 
 \begin{frame}[fragile]{Arrays}
   \begin{itemize}
-  \item \verb|array<T>| is the type of array of type \verb|T|.
-  \item \verb|array<T>| is always non-empty, while \verb|array?<T>| can be \verb|null|.
+  \item \verb|array<T>| is the type of arrays of type \verb|T|.
+  \item An \verb|array<T>| is always non-empty, while \verb|array?<T>| can be \verb|null|.
   \item An array have a built-in length field, \verb|a.Length|.
-  \item All array accesses must be proven to be within bounds.
+  \item All array accesses must be provable to be in-bounds.
   \end{itemize}
   This program can be successfully verified, but what does it mean?
   \begin{verbnobox}[\footnotesize]
 method Find(a: array<int>, key: int) returns (index: int)
    ensures 0 <= index ==> index < a.Length && a[index] == key
 {
-  return -1;
+   return -1;
 }
   \end{verbnobox}
 \end{frame}
